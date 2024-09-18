@@ -695,13 +695,12 @@ private func loadAd() {
 ```
     
 [self.maNativeAdView bindViewsWithAdViewBinder:binder];
-```
+
 </details>
-```
+
 
 <details>
-<summary>Appstock SDK iOS - Mediation - ironSource</summary>
-# Appstock SDK iOS - Mediation - ironSource
+<summary># Appstock SDK iOS - Mediation - ironSource</summary>
 
 In order to integrate Appstock ironSource Adapter into your app, add the following lines to your Podfile:
 
