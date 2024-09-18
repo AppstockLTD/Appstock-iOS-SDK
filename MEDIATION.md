@@ -512,6 +512,7 @@ MANativeAdViewBinder * binder = [
         builder.callToActionButtonTag = 5;
     }
 ];
+```
 </details>
 
 
