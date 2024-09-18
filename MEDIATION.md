@@ -697,6 +697,7 @@ private func loadAd() {
 [self.maNativeAdView bindViewsWithAdViewBinder:binder];
 ```
 </details>
+```
 
 <details>
 <summary>Appstock SDK iOS - Mediation - ironSource</summary>
