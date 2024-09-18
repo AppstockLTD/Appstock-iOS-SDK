@@ -517,7 +517,7 @@ MANativeAdViewBinder * binder = [
 
 
 <details>
-<summary># Mediation - TopOn</summary>
+<summary># Appstock SDK iOS - Mediation - TopOn</summary>
 
 
 In order to integrate Appstock TopOn Adapter into your app, add the following lines to your Podfile:
@@ -696,4 +696,48 @@ private func loadAd() {
     
 [self.maNativeAdView bindViewsWithAdViewBinder:binder];
 ```
+</details>
+
+<details>
+<summary>Appstock SDK iOS - Mediation - ironSource</summary>
+# Appstock SDK iOS - Mediation - ironSource
+
+In order to integrate Appstock ironSource Adapter into your app, add the following lines to your Podfile:
+
+```bash
+pod 'AppstockSDK', '1.0.2'
+pod 'AppstockIronSourceAdapter', '1.0.2'
+```
+
+To integrate the Appstock SDK into your ironSource monetization stack, you should create an ad network and add it to the respective ad units.
+
+1. Sign in to your [IronSource account](https://platform.ironsrc.com).
+2. Click **Apps** in the sidebar (**LevelPlay** -> **Apps**). Then click **Add app** .
+
+<img src="res/ironsource/appstock-sdk-ios-ironsource-1.png" width="650">
+
+3. Fill app details and click **Add app**.
+
+<img src="res/ironsource/appstock-sdk-ios-ironsource-2.png" width="650">
+
+4. Click **SDK networks** in the sidebar (**LevelPlay** -> **Setup** -> **SDK networks**). Click **Manage networks** and **Custom Adapter**.
+
+<img src="res/ironsource/appstock-sdk-ios-ironsource-3.png" width="650">
+
+5. Enter the network key `15c03f8f1` and click **Save**.
+
+<img src="res/ironsource/appstock-sdk-ios-ironsource-4.png" width="650">
+
+6. Fill your **partnerKey** for the Appstock platform and click **Save**.
+
+<img src="res/ironsource/appstock-sdk-ios-ironsource-5.png" width="650">
+
+7. Click **Setup** in the available networks list.
+
+<img src="res/ironsource/appstock-sdk-ios-ironsource-6.png" width="650">
+
+8. Create network instances for all placements you have in the Appstock platform. Fill **placementId**, **Mediation Groups** and **Rate** for desired type of the ad. Click **Save**.
+
+<img src="res/ironsource/appstock-sdk-ios-ironsource-7.png" width="650">
+
 </details>
