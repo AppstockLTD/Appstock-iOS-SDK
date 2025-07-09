@@ -1,30 +1,32 @@
 # Appstock SDK iOS - Overview
 
-Appstock SDK is a native library that monetizes iOS applications. The latest SDK version is **1.0.0**.
+Appstock SDK is a native library that monetizes iOS applications. The latest SDK version is **1.1.0**.
 
 The minimum deployment target is **iOS 12.0**.
 
-Demo applications (Swift, ObjC): https://public-sdk.al-ad.com/ios/appstock-demo/demo-app-1.0.0/demo-app-1.0.0.zip
+Demo applications (Swift, ObjC): https://public-sdk.al-ad.com/ios/appstock-demo/demo-app-1.1.0/demo-app-1.1.0.zip
 
 ## Integration and configuration
 
-Follow the [integration instructions](./2-appstock-sdk-ios-integration.md#ios-sdk---integration) to add the SDK to your app. Once the SDK is integrated, you can provide [configuration options](./6-appstock-sdk-ios-parametrization.md#ios-sdk---sdk-parametrization) that will help increase your revenue. Keep in mind that the SDK supports basic [consent providers](./7-appstock-sdk-ios-consent-management.md#ios-sdk---consent-management) according to industry standards.  
+Follow the [integration instructions](./1.1-appstock-sdk-ios-integration.md#appstock-sdk-ios---integration) to add the SDK to your app. Once the SDK is integrated, you can provide [configuration options](./1.6-appstock-sdk-ios-parametrization.md#appstock-sdk-ios---sdk-parametrization) that will help increase your revenue. Keep in mind that the SDK supports basic [consent providers](./1.7-appstock-sdk-ios-consent-management.md#appstock-sdk-ios---consent-management) according to industry standards.  
 
 Appstock SDK supports the following ad formats: 
 
-- [Banner](./3-appstock-sdk-ios-banner.md#ios-sdk---banner) (HTML or Video)
-- [Interstitial](./4-appstock-sdk-ios-interstitial.md#ios-sdk---interstitial) (HTML and Video)
-- [Native](./5-appstock-sdk-ios-native.md#ios-sdk---native)
+- [Banner](./1.2-appstock-sdk-ios-banner.md#appstock-sdk-ios---banner) (HTML or Video)
+- [Interstitial](./1.3-appstock-sdk-ios-interstitial.md#appstock-sdk-ios---interstitial) (HTML and Video)
+- [Rewarded](./1.4-appstock-sdk-ios-rewarded.md#appstock-sdk-ios---rewarded) (HTML and Video)
+- [Native](./1.5-appstock-sdk-ios-native.md#appstock-sdk-ios---native)
 
 The SDK can be integrated directly into your app or via supported Mediation Adapters: 
 
-- [AppLovin MAX](https://github.com/AppstockLTD/Appstock-iOS-SDK/blob/main/MEDIATION.md)
-- [GMA SDK](https://github.com/AppstockLTD/Appstock-iOS-SDK/blob/main/MEDIATION.md) (AdMob, GAM)
-- [TopOn](https://github.com/AppstockLTD/Appstock-iOS-SDK/blob/main/MEDIATION.md) 
-- [IronSource | LevelPlay](https://github.com/AppstockLTD/Appstock-iOS-SDK/blob/main/MEDIATION.md) 
+- [AppLovin MAX](./1.9-appstock-sdk-ios-applovin.md#appstock-sdk-ios---mediation---applovin)
+- [GMA SDK](./1.8-appstock-sdk-ios-admob.md#appstock-sdk-ios---mediation---admob) (AdMob, GAM) 
+- [TopOn](./2.0-appstock-sdk-ios-topon.md#appstock-sdk-ios---mediation---topon)
+- [ironSource](./2.1-appstock-sdk-ios-ironsource.md#appstock-sdk-ios---mediation---ironsource)
 
-<details>
-<summary># Appstock SDK iOS - Integration</summary>
+
+# Appstock SDK iOS - Integration
+
 Appstock SDK is available for integration via CocoaPods dependency manager and direct download of the compiled framework.
 
 ## Cocoapods
@@ -34,14 +36,14 @@ We assume the [CocoaPods](https://cocoapods.org/) dependency manager has already
 Add this line into your Podfile within the application target:
 
 ```bash
-pod 'AppstockSDK', '1.0.0'
+pod 'AppstockSDK', '1.1.0'
 ```
 
 Then run `pod install --repo-update`.
 
 ## Direct download
 
-The Appstock SDK is also available via a direct download link: https://public-sdk.al-ad.com/ios/appstock-sdk/1.0.0/AppstockSDK.xcframework.zip
+The Appstock SDK is also available via a direct download link: https://public-sdk.al-ad.com/ios/appstock-sdk/1.1.0/AppstockSDK.xcframework.zip
 
 ## SDK Initialization
 
@@ -78,14 +80,12 @@ The `Appstock.initializeSdk()` method has a parameter:
 
 - **partnerKey** - determine the Appstock server URL. The Appstock account manager should provide you with this key.
 
-It is recommended that contextual information be provided after initialization to enrich the ad requests. For this purpose, use [SDK parametrization](./6-appstock-sdk-ios-parametrization.md#ios-sdk---sdk-parametrization) properties.
+It is recommended that contextual information be provided after initialization to enrich the ad requests. For this purpose, use [SDK parametrization](./1.6-appstock-sdk-ios-parametrization.md#appstock-sdk-ios---sdk-parametrization) properties.
 
 Once SDK is initialized and all needed parameters are provided, it is ready to request the ads.
-</details>
 
-<details>
-<summary># Appstock SDK iOS - Banner</summary>
 
+# Appstock SDK iOS - Banner
 
 To load a banner ad, create a `AppstockAdView` object, configure it, add it to the view hierarchy, and call its `loadAd()` method.
 
@@ -177,7 +177,8 @@ extension BannerAdViewController: AppstockAdViewDelegate {
         print("Did fail to receive ad with error: \(error.localizedDescription)")
     }
      
-    func adView(_ adView: AppstockAdView, didReceiveAdWithAdSize adSize: CGSize) {
+    func adView(_ adView: AppstockAdView, didReceiveAdWithAdSize adSize: CGSize,
+    adInfo: AppstockAdInfo) {
         // Called when ad is loaded
     }
      
@@ -218,7 +219,7 @@ extension BannerAdViewController: AppstockAdViewDelegate {
 }
 
 - (void)adView:(AppstockAdView *)adView 
-didReceiveAdWithAdSize:(CGSize)adSize {
+didReceiveAdWithAdSize:(CGSize)adSize adInfo:(AppstockAdInfo *)adInfo {
     // Called when ad is loaded
 }
 
@@ -234,6 +235,8 @@ didReceiveAdWithAdSize:(CGSize)adSize {
     // Called when the application is about to enter the background
 }
 ```
+
+Once the ad is loaded you can utilize it's basic properties inspecting [AppStockAdInfo](./2.2-appstock-sdk-ios-utils.md#appstockadinfo) structure. Currently AppstockSDK provides the ad price and later this object will be extended.
 
 The `refreshInterval` property controls the frequency of automatic ad refreshes. This interval is set in seconds and dictates how often a new ad request is made after the current ad is displayed.
 
@@ -276,11 +279,8 @@ adView.adPosition = .footer
 ```objc
 adView.adPostion = AppstockAdPositionFooter;
 ```
-</details>
 
-<details>
-<summary># Appstock SDK iOS - Interstitial</summary>
-
+# Appstock SDK iOS - Interstitial
 
 To load interstitial ads, you should create and configure the `AppstockInterstitialAdUnit` and call its `loadAd()` method.
 
@@ -328,10 +328,10 @@ If you need to integrate **video** ads or **multiformat** ads, you should set th
 // Make ad request for video ad
 interstitialAdUnit.adFormats = [.video]
  
-// Make ad request for both video and banner ads
+// Make ad request for both video and banner ads (default behaviour)
 interstitialAdUnit.adFormats = [.video, .banner]
  
-// Make ad request for banner ad (default behaviour)
+// Make ad request for banner ad 
 interstitialAdUnit.adFormats = [.banner]
 ```
 
@@ -341,10 +341,10 @@ interstitialAdUnit.adFormats = [.banner]
 // Make ad request for video ad
 interstitialAdUnit.adFormats = [NSSet setWithArray:@[AppstockAdFormat.video]];
  
-// Make ad request for both video and banner ads
+// Make ad request for both video and banner ads (default behaviour)
 interstitialAdUnit.adFormats = [NSSet setWithArray:@[AppstockAdFormat.video, AppstockAdFormat.banner]];
  
-// Make ad request for banner ad (default behaviour)
+// Make ad request for banner ad
 interstitialAdUnit.adFormats = [NSSet setWithArray:@[AppstockAdFormat.banner]];
 ```
 
@@ -370,13 +370,15 @@ Once the ad is loaded, you can invoke the `show()` method at any appropriate poi
 
 When the delegate’s method `interstitialDidReceiveAd` is called, it means that the SDK has successfully loaded the ad. Starting from this point, you can call the `show()` method to display the full-screen ad.
 
+The ad’s basic properties can be accessed through the [AppStockAdInfo](./2.2-appstock-sdk-ios-utils.md#appstockadinfo) structure once the ad has been loaded. Currently AppstockSDK provides the ad price and later this object will be extended.
+
 *Swift*
 
 ```swift 
 extension AppstockBannerInterstitialViewController: 
 AppstockInterstitialAdUnitDelegate {
      
-    func interstitialDidReceiveAd(_ interstitial: AppstockInterstitialAdUnit) {
+    func interstitialDidReceiveAd(_ interstitial: AppstockInterstitialAdUnit, adInfo: AppstockAdInfo) {
         // Called when ad is loaded
          
         // Show the full screen ad
@@ -428,7 +430,7 @@ AppstockInterstitialAdUnitDelegate {
     NSLog(@"Did fail to receive ad with error: %@", error.localizedDescription);
 }
 
-- (void)interstitialDidReceiveAd:(AppstockInterstitialAdUnit *)interstitial {
+- (void)interstitialDidReceiveAd:(AppstockInterstitialAdUnit *)interstitial adInfo:(AppstockAdInfo *)adInfo {
     // Called when ad is loaded
     [interstitial showFrom:self];
 }
@@ -489,10 +491,219 @@ interstitialAdUnit.skipButtonPosition = AppstockPositionTopLeft;
 interstitialAdUnit.skipDelay = 15.0;
 interstitialAdUnit.isSoundButtonVisible = YES;
 ```
-</details>
 
-<details>
-<summary># Appstock SDK iOS - Native</summary>
+
+# Appstock SDK iOS - Rewarded
+
+To load rewarded ads, you should create and configure the `AppstockRewardedAdUnit` and call its `loadAd()` method.
+
+*Swift*
+
+```swift
+private var rewardedAdUnit: AppstockRewardedAdUnit!
+ 
+private func loadAd() {
+    // 1. Create a AppstockRewardedAdUnit
+    rewardedAdUnit = AppstockRewardedAdUnit()
+     
+    // 2. Configure the AppstockRewardedAdUnit
+    rewardedAdUnit.placementID = placementID
+    rewardedAdUnit.delegate = self
+     
+    // 3. Load the rewarded ad
+    rewardedAdUnit.loadAd()
+}
+```
+
+*Objective-C*
+
+```objc
+@property (nonatomic) AppstockRewardedAdUnit * rewardedAdUnit;
+
+- (void)loadAd {
+    // 1. Create a AppstockRewardedAdUnit
+    self.rewardedAdUnit = [[AppstockRewardedAdUnit alloc] init];
+    
+    // 2. Configure the AppstockRewardedAdUnit
+    self.rewardedAdUnit.placementID = self.placementID;
+    self.rewardedAdUnit.delegate = self;
+    
+    // 3. Load the rewarded ad
+    [self.rewardedAdUnit loadAd];
+}
+```
+
+If you need to integrate **video** ads or **multiformat** ads, you should set the adFormats property to the respective value:        
+
+*Swift*
+
+```swift
+// Make ad request for video ad
+rewardedAdUnit.adFormats = [.video]
+ 
+// Make ad request for both video and banner ads (default behaviour)
+rewardedAdUnit.adFormats = [.video, .banner]
+ 
+// Make ad request for banner ad
+rewardedAdUnit.adFormats = [.banner]
+```
+
+*Objective-C*
+
+```objc
+// Make ad request for video ad
+rewardedAdUnit.adFormats = [NSSet setWithArray:@[AppstockAdFormat.video]];
+ 
+// Make ad request for both video and banner ads (default behaviour)
+rewardedAdUnit.adFormats = [NSSet setWithArray:@[AppstockAdFormat.video, AppstockAdFormat.banner]];
+ 
+// Make ad request for banner ad
+rewardedAdUnit.adFormats = [NSSet setWithArray:@[AppstockAdFormat.banner]];
+```
+
+You can check if the ad is ready to be shown by calling respective property:
+
+*Swift*
+
+```swift
+if rewardedAdUnit.isReady {
+    // Show the ad...
+}
+```
+
+*Objective-C*
+
+```objc
+if (rewardedAdUnit.isReady) {
+        
+}
+```
+
+Once the ad is loaded, you can invoke the `show()` method at any appropriate point of the app flow to present the fullscreen ad. To know when the ad is loaded, you should implement `AppstockRewardedAdUnitDelegate` protocol and subscribe to the ad events in its methods.
+
+When the delegate’s method `rewardedAdDidReceiveAd` is called, it means that the SDK has successfully loaded the ad. Starting from this point, you can call the `show()` method to display the full-screen ad.
+
+The ad’s basic properties can be accessed through the [AppStockAdInfo](./2.2-appstock-sdk-ios-utils.md#appstockadinfo) structure once the ad has been loaded. Currently AppstockSDK provides the ad price and later this object will be extended.
+
+*Swift*
+
+```swift 
+extension AppstockBannerRewardedViewController: 
+AppstockRewardedAdUnitDelegate {
+     
+    func rewardedAdDidReceiveAd(_ rewardedAd: AppstockRewardedAdUnit, adInfo: AppstockAdInfo) {
+        // Called when ad is loaded
+         
+        // Show the full screen ad
+        if rewardedAd.isReady {
+            rewardedAd.show(from: self)
+        }
+    }
+     
+    func rewardedAd(
+        _ rewardedAd: AppstockRewardedAdUnit,
+        didFailToReceiveAdWithError error: Error?
+    ) {
+        // Called when Appstock SDK failed to load ad
+        print("Did fail to receive ad with error: 
+        \(String(describing: error?.localizedDescription))")
+    }
+     
+    func rewardedAdWillPresentAd(_ rewardedAd: AppstockRewardedAdUnit) {
+        // Called when rewarded ad is about to be presented
+    }
+     
+    func rewardedAdDidDismissAd(_ rewardedAd: AppstockRewardedAdUnit) {
+        // Called when rewarded ad is dismissed
+    }
+     
+    func rewardedAdDidClickAd(_ rewardedAd: AppstockRewardedAdUnit) {
+        // Called when rewarded ad was clicked
+    }
+     
+    func rewardedAdWillLeaveApplication(_ rewardedAd: AppstockRewardedAdUnit) {
+        // Called when the application is about to enter the background
+    }
+    
+    func rewardedAdUserDidEarnReward(_ rewardedAd: AppstockRewardedAdUnit, reward: AppstockReward) {
+        // Called when the reward was granted to user
+    }
+}
+```
+
+*Objective-C*
+
+```objc
+@interface AppstockBannerRewardedViewController : UIViewController <AppstockRewardedAdUnitDelegate>
+
+@end
+
+// ...
+
+- (void)rewardedAdDidReceiveAd:(AppstockRewardedAdUnit *)rewardedAd adInfo:(AppstockAdInfo *)adInfo {
+    // Called when ad is loaded
+    [rewardedAd showFrom:self];
+}
+
+- (void)rewardedAd:(AppstockRewardedAdUnit *)rewardedAd didFailToReceiveAdWithError:(NSError *)error {
+    // Called when Appstock SDK failed to load ad
+    NSLog(@"Did fail to receive ad with error: %@", error.localizedDescription);
+}
+
+- (void)rewardedAdWillPresentAd:(AppstockRewardedAdUnit *)rewardedAd {
+    // Called when rewarded ad is about to be presented
+}
+
+- (void)rewardedAdDidDismissAd:(AppstockRewardedAdUnit *)rewardedAd {
+    // Called when rewarded ad is dismissed
+}
+
+- (void)rewardedAdDidClickAd:(AppstockRewardedAdUnit *)rewardedAd {
+    // Called when rewarded ad was clicked
+}
+
+- (void)rewardedAdWillLeaveApplication:(AppstockRewardedAdUnit *)rewardedAd {
+    // Called when the application is about to enter the background
+}
+
+- (void)rewardedAdUserDidEarnReward:(AppstockRewardedAdUnit *)rewardedAd reward:(AppstockReward *)reward {
+    // Called when the reward was granted to user
+}
+```
+
+### Rendering Controls
+
+The following properties enable rendering customization of video rewarded ads.
+
+| Property             | Description                                                                                                                                                     |
+|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| isMuted              | This option lets you switch the sound on or off during playback. Default is `false`.                                                                            |
+| closeButtonArea      | This setting determines the percentage of the device screen that the close button should cover. Allowed range - `0...1`. Default value is `0.1`.                |
+| closeButtonPosition  | This setting controls where the close button appears on the screen. Allowed values: `topLeft`, `topRight`. Other values will be ignored. Default is `topRight`. |
+| isSoundButtonVisible | This option switches on or off the visibility of the sound/mute button for users. Default value is `false`.                                                     |
+
+Usage example: 
+
+*Swift*
+
+```swift
+rewardedAdUnit.isMuted = true
+rewardedAdUnit.closeButtonArea = 0.2
+rewardedAdUnit.closeButtonPosition = .topRight
+rewardedAdUnit.isSoundButtonVisible = true
+```
+
+*Objective-C*
+
+```objc
+rewardedAdUnit.isMuted = YES;
+rewardedAdUnit.closeButtonArea = 0.2;
+rewardedAdUnit.closeButtonPosition = AppstockPositionTopRight;
+rewardedAdUnit.isSoundButtonVisible = YES;
+```
+
+
+# Appstock SDK iOS - Native
 
 To load a native ad, you should initialize and configure `AppstockNativeAdUnit` object and call the `loadAd()` method.
 
@@ -562,6 +773,9 @@ private func loadAd() {
          
         self.nativeAd?.registerView(view: self.view, 
         clickableViews: [self.callToActionButton])
+
+        // Use `AdInfo` to get information about the received bid.
+        print("Bid price: \(String(describing: nativeAd?.adInfo?.price))")
     }
 }
 ```
@@ -656,6 +870,9 @@ private func loadAd() {
         placeholder:[UIImage systemImageNamed:@"photo.artframe"]];
         [weakSelf.callToActionButton 
         setTitle:ad.callToAction  forState:UIControlStateNormal];
+
+        // Use `AdInfo` to get information about the received bid.
+        NSLog(@"Bid price: %@", weakSelf.nativeAd.adInfo.price ?: @"(null)");
     }];
 }
 ```
@@ -749,6 +966,8 @@ Once the ad is loaded, the SDK provides you with a `AppstockNativeAd` object in 
 
 If you need to manage stages of the ad lifecycle you should implement the `AppstockNativeAdDelegate` protocol.
 
+The ad’s basic properties can be accessed through the [AppStockAdInfo](./2.2-appstock-sdk-ios-utils.md#appstockadinfo) structure once the ad has been loaded. Currently AppstockSDK provides the ad price and later this object will be extended.
+
 *Swift*
 
 ```swift
@@ -803,10 +1022,8 @@ let request = adUnit.getNativeRequestObject()
 ```objc
 NSDictionary * request = [self.nativeAdUnit getNativeRequestObject];
 ```
-</details>
 
-<details>
-<summary># Appstock SDK iOS - SDK Parametrization</summary>
+# Appstock SDK iOS - SDK Parametrization
 
 ## Configuration via `AppstockTargeting` class
 
@@ -1045,5 +1262,795 @@ Appstock SDK reads consent data provided by CMPs from User Settings and sends it
 | `IABGPP_HDR_GppString`                                                                                                                                       | Full consent string in its encoded form                                                                                                                                                                          | `regs.gpp`                                         |
 | `IABGPP_GppSID`                                                                                                                                              | Section ID(s) considered to be in force. Multiple IDs are separated by underscore, e.g. “2_3”                                                                                                                    | `regs.gpp_sid`                                     |
 
-</details>
+# Appstock SDK iOS - Mediation - AdMob
 
+In order to integrate Appstock AdMob Adapter into your app, add the following lines to your Podfile:
+
+```bash
+pod 'AppstockSDK', '1.1.0'
+pod 'GoogleMobileAdsAppstockAdapter', '1.1.0'
+```
+
+In order to add Appstock to the waterfall, you need to create a custom event in your AdMob account and then add this event to the respective mediation groups.
+
+To create a Appstock custom event, follow the instructions:
+
+1. Sign in to your AdMob account at https://apps.admob.com.
+2. Click **Mediation** in the sidebar.
+
+<img src="res/admob/appstock-sdk-ios-admob-1.png" width="250">
+
+3. Click the **Waterfall** sources tab. 
+
+<img src="res/admob/appstock-sdk-ios-admob-2.png" width="650">
+
+4. Click **Custom Event**.
+
+<img src="res/admob/appstock-sdk-ios-admob-3.png" width="650">
+
+5. Find your app in the list and click on it to expand.
+
+<img src="res/admob/appstock-sdk-ios-admob-4.png" width="650">
+
+6. Click **Add mapping**.
+
+<img src="res/admob/appstock-sdk-ios-admob-5.png" width="650">
+
+7. Click **Add mapping**. To include multiple custom events, you’ll need to set up [additional mappings](https://support.google.com/admob/answer/13395411#manage).
+
+<img src="res/admob/appstock-sdk-ios-admob-6.png" width="650">
+
+8. Add the mapping details, including a mapping name. Enter a class name (required) and a parameter (optional) for each ad unit. Typically, the optional parameter contains a JSON that contains IDs (placement ID, endpoint ID) that will be used by the custom event to load ads.
+
+Parameters:
+
+- **placement_id** - unique identifier generated on the platform's UI;
+- **endpoint_id** - unique identifier generated on the platform's UI;
+- **sizes** - array of the ad sizes. You can specify width in `w` field and height in `h` field. Make sure you've provided both width and height values;
+- **ad_formats** - array of the ad formats. You can pass only `banner` and `video` ad formats. Other values will be ignored. Note that the multiformat request is supported only for interstitial ads.
+
+```json
+{
+  "placement_id": “4”,
+  "sizes": [
+    {
+      "w": 729,
+      "h": 90
+    }
+  ],
+  "ad_formats": ["video"]
+}
+```
+
+```json
+{
+  "endpoint_id": "1",
+  "sizes": [
+    {
+      "w": 320,
+      "h": 50
+    },
+    {
+      "w": 300,
+      "h": 250
+    },
+  ],
+  "ad_formats": ["banner"]
+}
+```
+
+<img src="res/admob/appstock-sdk-ios-admob-7.png" width="650">
+
+9. Click **Save**.
+
+<img src="res/admob/appstock-sdk-ios-admob-8.png" width="650">
+
+After you’ve finished setting up your custom event, you’re ready to add it to a mediation group. To add your ad source to an existing mediation group:
+
+1. Sign in to your AdMob account at https://apps.admob.com.
+2. Click **Mediation** in the sidebar.
+
+<img src="res/admob/appstock-sdk-ios-admob-9.png" width="250">
+
+3. In the **Mediation group** tab, click the name of the mediation group to which you're adding the ad source. 
+
+<img src="res/admob/appstock-sdk-ios-admob-10.png" width="650">
+
+4. In the Waterfall ad sources table, click **Add custom event**.
+
+<img src="res/admob/appstock-sdk-ios-admob-11.png" width="650">
+
+5. Enter a descriptive label for the event. Enter a manual eCPM to use for this custom event. The eCPM will be used to dynamically position the event in the mediation waterfall where it will compete with other ad sources to fill ad requests.
+
+<img src="res/admob/appstock-sdk-ios-admob-12.png" width="650">
+
+6. Click **Continue**.
+
+<img src="res/admob/appstock-sdk-ios-admob-13.png" width="650">
+
+7. Select an existing mapping to use for this custom event or click Add mapping to set up a new mapping. To use multiple custom events, you’ll have to [create an additional mapping](https://support.google.com/admob/answer/13395411#manage) for each custom event.
+
+<img src="res/admob/appstock-sdk-ios-admob-14.png" width="650">
+
+8. Click **Done**.
+
+<img src="res/admob/appstock-sdk-ios-admob-15.png" width="650">
+
+9. Click **Save**. The mediation group will be saved.
+
+<img src="res/admob/appstock-sdk-ios-admob-16.png" width="650">
+
+## Native Ads
+
+If you integrate native ads, you should pass the native assets through Google Mobile Ads SDK (`GADAdLoader`) to the Appstock Adapter using `AppstockGADExtras` class in your app code:
+
+*Swift*
+
+```swift
+private func loadAd() {
+    // 1. Create a GADAdLoader
+    adLoader = GADAdLoader(
+        adUnitID: adUnitId,
+        rootViewController: self,
+        adTypes: [.native],
+        options: []
+    )
+     
+    // 2. Configure the GADAdLoader
+    adLoader?.delegate = self
+     
+    // 3. Configure the native parameters
+    let image = AppstockNativeAssetImage(minimumWidth: 200, 
+    minimumHeight: 50, required: true)
+    image.type = .Main
+     
+    let icon = AppstockNativeAssetImage(minimumWidth: 20, 
+    minimumHeight: 20, required: true)
+    icon.type = .Icon
+     
+    let title = AppstockNativeAssetTitle(length: 90, required: true)
+    let body = AppstockNativeAssetData(type: .description, 
+    required: true)
+    let cta = AppstockNativeAssetData(type: .ctatext, required: true)
+    let sponsored = AppstockNativeAssetData(type: .sponsored, 
+    required: true)
+     
+    let parameters = AppstockNativeParameters()
+    parameters.assets = [title, icon, image, sponsored, body, cta]
+     
+    let eventTracker = AppstockNativeEventTracker(
+        event: .Impression,
+        methods: [.Image, .js]
+    )
+     
+    parameters.eventtrackers = [eventTracker]
+    parameters.context = .Social
+    parameters.placementType = .FeedContent
+    parameters.contextSubType = .Social
+     
+    // 4. Create a AppstockGADExtras
+    let extras = AppstockGADExtras(nativeParameters: parameters)
+     
+    // 5. Create a GADRequest
+    let request = GADRequest()
+     
+    // 6. Register the AppstockGADExtras
+    request.register(extras)
+     
+    // 7. Load the ad
+    adLoader?.load(request)
+}
+```
+
+*Objective-C*
+
+```objc
+- (void)loadAd {
+    // 1. Create a GADAdLoader
+    self.adLoader = [[GADAdLoader alloc] initWithAdUnitID:self.adUnitId
+    rootViewController:self adTypes:@[GADAdLoaderAdTypeNative]
+    options:@[]];
+    
+    // 2. Configure the GADAdLoader
+    self.adLoader.delegate = self;
+    
+    // 3. Configure the native parameters
+    AppstockNativeAssetImage *image = [
+        [AppstockNativeAssetImage alloc]
+        initWithMinimumWidth:200
+        minimumHeight:200
+        required:true
+    ];
+    
+    image.type = AppstockImageAsset.Main;
+    
+    AppstockNativeAssetImage *icon = [
+        [AppstockNativeAssetImage alloc]
+        initWithMinimumWidth:20
+        minimumHeight:20
+        required:true
+    ];
+    
+    icon.type = AppstockImageAsset.Icon;
+    
+    AppstockNativeAssetTitle *title = [
+        [AppstockNativeAssetTitle alloc]
+        initWithLength:90
+        required:true
+    ];
+    
+    AppstockNativeAssetData *body = [
+        [AppstockNativeAssetData alloc]
+        initWithType:AppstockDataAssetDescription
+        required:true
+    ];
+    
+    AppstockNativeAssetData *cta = [
+        [AppstockNativeAssetData alloc]
+        initWithType:AppstockDataAssetCtatext
+        required:true
+    ];
+    
+    AppstockNativeAssetData *sponsored = [
+        [AppstockNativeAssetData alloc]
+        initWithType:AppstockDataAssetSponsored
+        required:true
+    ];
+    
+    AppstockNativeParameters * parameters = 
+    [AppstockNativeParameters new];
+    parameters.assets = @[title, icon, image, sponsored, body, cta];
+    
+    AppstockNativeEventTracker * eventTracker = [
+        [AppstockNativeEventTracker alloc]
+        initWithEvent:AppstockEventType.Impression
+        methods:@[AppstockEventTracking.Image, AppstockEventTracking.js]
+    ];
+    
+    parameters.eventtrackers = @[eventTracker];
+    parameters.context = AppstockContextType.Social;
+    parameters.placementType = AppstockPlacementType.FeedContent;
+    parameters.contextSubType = AppstockContextSubType.Social;
+    
+    // 4. Create a AppstockGADExtras
+    AppstockGADExtras * extras = [[AppstockGADExtras alloc] 
+    initWithNativeParameters:parameters];
+    
+    // 5. Create a GADRequest
+    GADRequest * request = [GADRequest new];
+    
+    // 6. Register the AppstockGADExtras
+    [request registerAdNetworkExtras:extras];
+    
+    // 7. Load the ad
+    [self.adLoader loadRequest:request];
+}
+```
+
+Display the ad as described in [AdMob docs](https://developers.google.com/admob/ios/native/advanced):
+
+*Swift*
+
+```swift
+func adLoader(_ adLoader: GADAdLoader, didReceive nativeAd: GADNativeAd) {
+    // Set GADNativeAd in GADNativeAdView
+    admobNativeView.nativeAd = nativeAd
+    
+    // 8. Render the ad
+    titleLabel.text = nativeAd.headline
+    bodyLabel.text = nativeAd.body
+    
+    mainImageView.setImage(
+        from: nativeAd.images?.last?.imageURL?.absoluteString,
+        placeholder: UIImage(systemName: "photo.artframe")
+    )
+    
+    iconView.setImage(
+        from: nativeAd.icon?.imageURL?.absoluteString,
+        placeholder: UIImage(systemName: "photo.artframe")
+    )
+    
+    callToActionButton.setTitle(nativeAd.callToAction, for: .normal)
+    sponsoredLabel.text = nativeAd.advertiser
+}
+```
+
+*Objective-C*
+
+```objc
+- (void)adLoader:(GADAdLoader *)adLoader didReceiveNativeAd:(GADNativeAd *)nativeAd {
+    // Set GADNativeAd in GADNativeAdView
+    self.admobNativeView.nativeAd = nativeAd;
+    
+    self.titleLabel.text = nativeAd.headline;
+    self.bodyLabel.text = nativeAd.body;
+    self.sponsoredLabel.text = nativeAd.advertiser;
+    
+    [self.mainImageView setImageFromURLString:nativeAd.images.lastObject.imageURL.absoluteString
+                                      placeholder:[UIImage systemImageNamed:@"photo.artframe"]];
+    [self.iconView setImageFromURLString:nativeAd.icon.imageURL.absoluteString
+                                      placeholder:[UIImage systemImageNamed:@"photo.artframe"]];
+    [self.callToActionButton setTitle:nativeAd.callToAction forState:UIControlStateNormal];
+}
+```
+
+
+
+# Appstock SDK iOS - Mediation - AppLovin
+
+In order to integrate Appstock AppLovin MAX Adapter into your app, add following lines to your Podfile:
+
+```bash
+pod 'AppstockSDK', '1.1.0'
+pod 'AppstockAppLovinMAXAdapter', '1.1.0'
+```
+
+To integrate the Appstock SDK into your AppLovin monetization stack, you should enable a Appstock SDK ad network and add it to the respective ad units.
+
+1. In the MAX Dashboard, select [MAX > Mediation > Manage > Networks](https://dash.applovin.com/o/mediation/networks/).
+
+<img src="res/applovin/appstock-sdk-ios-applovin-1.png" width="200">
+
+2. Click **Click here to add a Custom Network at the bottom of the page**. The **Create Custom Network** page appears.
+
+3. Add the information about your custom network:
+- **Network Type** : Choose **SDK**.
+- **Name** : Appstock.
+- **iOS Adapter Class Name** : AppstockAppLovinAdapter
+
+<img src="res/applovin/appstock-sdk-ios-applovin-2.png" width="650">
+<img src="res/applovin/appstock-sdk-ios-applovin-3.png" width="650">
+
+4. Open [MAX > Mediation > Manage > Ad Units](https://dash.applovin.com/o/mediation/ad_units/) in the MAX dashboard.
+
+<img src="res/applovin/appstock-sdk-ios-applovin-4.png" width="250">
+
+5. Search and select an ad unit for which you want to add the custom SDK network that you created in the previous step.
+
+<img src="res/applovin/appstock-sdk-ios-applovin-5.png" width="650">
+
+6. Select which custom network you want to enable and enter the information for each placement. Refer to the network documentation to see what values you need to set for the **App ID**, **Placement ID**, and **Custom Parameters**.
+
+<img src="res/applovin/appstock-sdk-ios-applovin-6.png" width="650">
+
+Typically, the custom parameters field should contain a JSON that contains IDs (placement ID, endpoint ID) that will be used to load ads.
+
+Parameters:
+
+- **placement_id** - unique identifier generated on the platform's UI;
+- **endpoint_id** - unique identifier generated on the platform's UI;
+- **sizes** - array of the ad sizes. You can specify width in `w` field and height in `h` field. Make sure you've provided both width and height values;
+- **ad_formats** - array of the ad formats. You can pass only `banner` and `video` ad formats. Other values will be ignored. Note that the multiformat request is supported only for interstitial ads.
+
+Example: 
+
+```json
+{
+  "placement_id": “4”,
+  "sizes": [
+    {
+      "w": 729,
+      "h": 90
+    }
+  ],
+  "ad_formats": ["video"]
+}
+```
+
+```json
+{
+  "endpoint_id": "1",
+  "sizes": [
+    {
+      "w": 320,
+      "h": 50
+    },
+    {
+      "w": 300,
+      "h": 250
+    },
+  ],
+  "ad_formats": ["banner"]
+}
+```
+
+7. Save ad unit.
+
+## Native Ads
+
+If you integrate native ads, you should pass the native assets through AppLovin MAX SDK (`MANativeAdLoader`) to the Appstock Adapter using `AppstockAppLovinExtras` class in your app code:
+
+*Swift*
+
+```swift
+private func loadAd() {
+    // 1. Create a MANativeAdLoader
+    nativeAdLoader = MANativeAdLoader(adUnitIdentifier: adUnitId)
+     
+    // 2. Configure the MANativeAdLoader
+    nativeAdLoader.nativeAdDelegate = self
+     
+    // 3. Configure the native parameters
+    let image = AppstockNativeAssetImage(minimumWidth: 200, 
+    minimumHeight: 50, required: true)
+    image.type = .Main
+     
+    let icon = AppstockNativeAssetImage(minimumWidth: 20, 
+    minimumHeight: 20, required: true)
+    icon.type = .Icon
+     
+    let title = AppstockNativeAssetTitle(length: 90, required: true)
+    let body = AppstockNativeAssetData(type: .description, 
+    required: true)
+    let cta = AppstockNativeAssetData(type: .ctatext, 
+    required: true)
+    let sponsored = AppstockNativeAssetData(type: .sponsored, 
+    required: true)
+     
+    let parameters = AppstockNativeParameters()
+    parameters.assets = [title, icon, image, sponsored, body, cta]
+     
+    let eventTracker = AppstockNativeEventTracker(
+        event: .Impression,
+        methods: [.Image, .js]
+    )
+     
+    parameters.eventtrackers = [eventTracker]
+    parameters.context = .Social
+    parameters.placementType = .FeedContent
+    parameters.contextSubType = .Social
+     
+    // 4. Create a AppstockAppLovinExtras
+    let extras = AppstockAppLovinExtras(nativeParameters: parameters)
+     
+    // 5. Set local extra parameter
+    nativeAdLoader.setLocalExtraParameterForKey(
+    AppstockAppLovinExtras.key, value: extras)
+     
+    // 6. Load the ad
+    nativeAdLoader.loadAd(into: maNativeAdView)
+}
+```
+
+*Objective-C*
+
+```objc
+- (void)loadAd {
+    // 1. Create a MANativeAdLoader
+    self.nativeAdLoader = [[MANativeAdLoader alloc] 
+    initWithAdUnitIdentifier:self.adUnitId];
+    
+    // 2. Configure the MANativeAdLoader
+    self.nativeAdLoader.nativeAdDelegate = self;
+    
+    // 3. Configure the native parameters
+    AppstockNativeAssetImage *image = [
+        [AppstockNativeAssetImage alloc]
+        initWithMinimumWidth:200
+        minimumHeight:200
+        required:true
+    ];
+    
+    image.type = AppstockImageAsset.Main;
+    
+    AppstockNativeAssetImage *icon = [
+        [AppstockNativeAssetImage alloc]
+        initWithMinimumWidth:20
+        minimumHeight:20
+        required:true
+    ];
+    
+    icon.type = AppstockImageAsset.Icon;
+    
+    AppstockNativeAssetTitle *title = [
+        [AppstockNativeAssetTitle alloc]
+        initWithLength:90
+        required:true
+    ];
+    
+    AppstockNativeAssetData *body = [
+        [AppstockNativeAssetData alloc]
+        initWithType:AppstockDataAssetDescription
+        required:true
+    ];
+    
+    AppstockNativeAssetData *cta = [
+        [AppstockNativeAssetData alloc]
+        initWithType:AppstockDataAssetCtatext
+        required:true
+    ];
+    
+    AppstockNativeAssetData *sponsored = [
+        [AppstockNativeAssetData alloc]
+        initWithType:AppstockDataAssetSponsored
+        required:true
+    ];
+    
+    AppstockNativeParameters * parameters = 
+    [AppstockNativeParameters new];
+    parameters.assets = @[title, icon, image, sponsored, body, cta];
+    
+    AppstockNativeEventTracker * eventTracker = [
+        [AppstockNativeEventTracker alloc]
+        initWithEvent:AppstockEventType.Impression
+        methods:@[AppstockEventTracking.Image, AppstockEventTracking.js]
+    ];
+    
+    parameters.eventtrackers = @[eventTracker];
+    parameters.context = AppstockContextType.Social;
+    parameters.placementType = AppstockPlacementType.FeedContent;
+    parameters.contextSubType = AppstockContextSubType.Social;
+    
+    // 4. Create a AppstockAppLovinExtras
+    AppstockAppLovinExtras * extras = [[AppstockAppLovinExtras alloc] 
+    initWithNativeParameters: parameters];
+    
+    // 5. Set local extra parameter
+    [self.nativeAdLoader 
+    setLocalExtraParameterForKey:AppstockAppLovinExtras.key value:extras];
+    
+    // 6. Load the ad
+    [self.nativeAdLoader loadAdIntoAdView:self.maNativeAdView];
+}
+```
+
+Make sure you've bound the subviews using unique tag IDs with an instance of `MANativeAdViewBinder` as described in [AppLovin MAX docs](https://developers.applovin.com/en/ios/ad-formats/native-ads/#:~:text=Ad%20Unit%20screen%3A-,Bind%20UI%20Components,-You%20can%20bind):
+
+*Swift*
+
+```swift
+   // Bind the subviews using unique tag IDs with an instance of MANativeAdViewBinder
+    let binder = MANativeAdViewBinder { builder in
+        builder.iconImageViewTag = 1
+        builder.titleLabelTag = 2
+        builder.bodyLabelTag = 3
+        builder.advertiserLabelTag = 4
+        builder.callToActionButtonTag = 5
+    }
+    
+    maNativeAdView.bindViews(with: binder)
+```
+
+*Objective-C*
+
+```objc
+MANativeAdViewBinder * binder = [
+    [MANativeAdViewBinder alloc]
+    initWithBuilderBlock:^(MANativeAdViewBinderBuilder * _Nonnull builder) {
+        builder.iconImageViewTag = 1;
+        builder.titleLabelTag = 2;
+        builder.bodyLabelTag = 3;
+        builder.advertiserLabelTag = 4;
+        builder.callToActionButtonTag = 5;
+    }
+];
+    
+[self.maNativeAdView bindViewsWithAdViewBinder:binder];
+```
+
+# Appstock SDK iOS - Mediation - TopOn
+
+In order to integrate Appstock TopOn Adapter into your app, add the following lines to your Podfile:
+
+```bash
+pod 'AppstockSDK', '1.1.0'
+pod 'AppstockTopOnAdapter', '1.1.0'
+```
+
+To integrate the Appstock SDK into your TopOn monetization stack, you should create an ad network and add it to the respective ad units.
+
+1. Register an account at [toponad.com](https://www.toponad.com/en).
+2. Create an app in TopOn dashborad. Select [[Application > Add app]](https://portal.toponad.com/m/app).
+
+<img src="res/topon/appstock-sdk-ios-topon-1.png" width="650">
+
+3. Fill the required information fields for your app. 
+
+<img src="res/topon/appstock-sdk-ios-topon-2.png" width="650">
+
+4. Click `Confirm`. 
+
+<img src="res/topon/appstock-sdk-ios-topon-3.png" width="650">
+
+5. Click `Add placement`.
+
+<img src="res/topon/appstock-sdk-ios-topon-4.png" width="650">
+
+6. Select the app. Fill `Placement name` and `Ad Format` fields.
+
+<img src="res/topon/appstock-sdk-ios-topon-5.png" width="650">
+
+7. Select `Network` and click `+ Custom Network Firm`. 
+
+<img src="res/topon/appstock-sdk-ios-topon-6.png" width="650">
+
+8. Fill `Network Firm Name`. Fill the adapter's class name: 
+
+- Interstitial - `AppstockInterstitialATAdAdapter`;
+- Banner - `AppstockBannerATAdAdapter`;
+- Native - `AppstockNativeATAdAdapter`.
+
+<img src="res/topon/appstock-sdk-ios-topon-7.png" width="650">
+
+9. Click `Confirm`.
+
+<img src="res/topon/appstock-sdk-ios-topon-8.png" width="650">
+
+10. Open the `Mediation` tab, select the app and placement, click `Add AD source`.
+
+<img src="res/topon/appstock-sdk-ios-topon-9.png" width="650">
+
+11. Find the needed network. Add `Ad source name` and `Price`. Fill the `Custom Parameters` Custom parameters should contain a valid JSON with IDs (placement ID, endpoint ID) values that will be used by the adapter to load ads. Click `Confirm`.
+
+<img src="res/topon/appstock-sdk-ios-topon-10.png" width="650">
+
+## Native Ads
+
+If you integrate native ads, you should pass the native assets through extras to the Appstock Adapter using `kAppstockNativeAssets` key in your app code:
+
+**Swift**
+
+```swift 
+private func loadAd() {
+    // 1. Configure the native parameters
+    let image = AppstockNativeAssetImage(minimumWidth: 200, minimumHeight: 50, required: true)
+    image.type = .Main
+    
+    let icon = AppstockNativeAssetImage(minimumWidth: 20, minimumHeight: 20, required: true)
+    icon.type = .Icon
+    
+    let title = AppstockNativeAssetTitle(length: 90, required: true)
+    let body = AppstockNativeAssetData(type: .description, required: true)
+    let cta = AppstockNativeAssetData(type: .ctatext, required: true)
+    let sponsored = AppstockNativeAssetData(type: .sponsored, required: true)
+    
+    let parameters = AppstockNativeParameters()
+    parameters.assets = [title, icon, image, sponsored, body, cta]
+    
+    let eventTracker = AppstockNativeEventTracker(
+        event: .Impression,
+        methods: [.Image, .js]
+    )
+    
+    parameters.eventtrackers = [eventTracker]
+    parameters.context = .Social
+    parameters.placementType = .FeedContent
+    parameters.contextSubType = .Social
+    
+    // 2. Set up the extras
+    let extra = [
+        kAppstockNativeAssets: parameters
+    ]
+    
+    // 3. Load the ad
+    ATAdManager.shared().loadAD(
+        withPlacementID: placementID,
+        extra: extra,
+        delegate: self
+    )
+}
+```
+
+*Objective-C*
+
+```objc
+- (void)loadAd {
+    // 1. Configure the native parameters
+    AppstockNativeAssetImage *image = [
+        [AppstockNativeAssetImage alloc]
+        initWithMinimumWidth:200
+        minimumHeight:200
+        required:true
+    ];
+    
+    image.type = AppstockImageAsset.Main;
+    
+    AppstockNativeAssetImage *icon = [
+        [AppstockNativeAssetImage alloc]
+        initWithMinimumWidth:20
+        minimumHeight:20
+        required:true
+    ];
+    
+    icon.type = AppstockImageAsset.Icon;
+    
+    AppstockNativeAssetTitle *title = [
+        [AppstockNativeAssetTitle alloc]
+        initWithLength:90
+        required:true
+    ];
+    
+    AppstockNativeAssetData *body = [
+        [AppstockNativeAssetData alloc]
+        initWithType:AppstockDataAssetDescription
+        required:true
+    ];
+    
+    AppstockNativeAssetData *cta = [
+        [AppstockNativeAssetData alloc]
+        initWithType:AppstockDataAssetCtatext
+        required:true
+    ];
+    
+    AppstockNativeAssetData *sponsored = [
+        [AppstockNativeAssetData alloc]
+        initWithType:AppstockDataAssetSponsored
+        required:true
+    ];
+    
+    AppstockNativeParameters * parameters = [AppstockNativeParameters new];
+    parameters.assets = @[title, icon, image, sponsored, body, cta];
+    
+    AppstockNativeEventTracker * eventTracker = [
+        [AppstockNativeEventTracker alloc]
+        initWithEvent:AppstockEventType.Impression
+        methods:@[AppstockEventTracking.Image, AppstockEventTracking.js]
+    ];
+    
+    parameters.eventtrackers = @[eventTracker];
+    parameters.context = AppstockContextType.Social;
+    parameters.placementType = AppstockPlacementType.FeedContent;
+    parameters.contextSubType = AppstockContextSubType.Social;
+    
+    // 2. Set up the extras
+    NSDictionary *extra = @{
+        kAppstockNativeAssets : parameters
+    };
+    
+    // 3. Load the ad
+    [[ATAdManager sharedManager] loadADWithPlacementID:self.placementID
+                                                 extra:extra
+                                              delegate:self];
+}
+```
+
+# Appstock SDK iOS - Mediation - ironSource
+
+In order to integrate Appstock ironSource Adapter into your app, add the following lines to your Podfile:
+
+```bash
+pod 'AppstockSDK', '1.1.0'
+pod 'AppstockIronSourceAdapter', '1.1.0'
+```
+
+To integrate the Appstock SDK into your ironSource monetization stack, you should create an ad network and add it to the respective ad units.
+
+1. Sign in to your [IronSource account](https://platform.ironsrc.com).
+2. Click **Apps** in the sidebar (**LevelPlay** -> **Apps**). Then click **Add app** .
+
+<img src="res/ironsource/appstock-sdk-ios-ironsource-1.png" width="650">
+
+3. Fill app details and click **Add app**.
+
+<img src="res/ironsource/appstock-sdk-ios-ironsource-2.png" width="650">
+
+4. Click **SDK networks** in the sidebar (**LevelPlay** -> **Setup** -> **SDK networks**). Click **Manage networks** and **Custom Adapter**.
+
+<img src="res/ironsource/appstock-sdk-ios-ironsource-3.png" width="650">
+
+5. Enter the network key `15c03f8f1` and click **Save**.
+
+<img src="res/ironsource/appstock-sdk-ios-ironsource-4.png" width="650">
+
+6. Fill your **partnerKey** for the Appstock platform and click **Save**.
+
+<img src="res/ironsource/appstock-sdk-ios-ironsource-5.png" width="650">
+
+7. Click **Setup** in the available networks list.
+
+<img src="res/ironsource/appstock-sdk-ios-ironsource-6.png" width="650">
+
+8. Create network instances for all placements you have in the Appstock platform. Fill **placementId**, **Mediation Groups** and **Rate** for desired type of the ad. Click **Save**.
+
+<img src="res/ironsource/appstock-sdk-ios-ironsource-7.png" width="650">
+
+
+# Appstock SDK iOS - Utils
+
+## AppstockAdInfo
+
+The `AppstockAdInfo` class serves as a container for metadata related to bidding, such as the bid price.
+
+| Property | Type       | Description |
+|----------|------------|-------------|
+| `price`  | `NSNumber?` |  Bid price expressed as CPM although the actual transaction is for a unit impression only. Note that while the type indicates float, integer math is highly recommended when handling currencies. |
